@@ -15,13 +15,10 @@ The initial numeric value is 0 and the operations should be applied in the order
 
 ## **Input Examples:**
 
-Input: "##\*&"
-Expected Output: "4"
-Explanation: Increment (1), increment (2), multiply (4), print (4).
-
-Input: "&##&\*&@&"
-Expected Output: "0243"
-Explanation: Print (0), increment (1), increment (2), print (2), multiply (4), print (4), decrement (3), print (3).
+|    Input    | Expected Output | Explanation                                                                                 |
+| :---------: | :-------------: | ------------------------------------------------------------------------------------------- |
+|   "##\*&"   |       "4"       | Increment (1), increment (2), multiply (4), print (4).                                      |
+| "&##&\*&@&" |     "0243"      | Increment (1), increment (2), print (2), multiply (4), print (4), decrement (3), print (3). |
 
 ## **Your Challenge:**
 

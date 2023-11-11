@@ -4,8 +4,36 @@ import TerminalRenderer from "marked-terminal";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 
+function bulletListStyle(body: string, ordered: boolean) {
+  const yellowColor = "\x1b[33m";
+  const cyanColor = "\x1b[36m";
+  const resetColor = "\x1b[0m";
+  const bulletColor = ordered ? cyanColor : yellowColor;
+
+  if (ordered) {
+    let counter = 1;
+    const styledBody = body.replace(/(^|\n)(\s*)\*/g, () => {
+      const replacement = `\n${bulletColor}${counter}.${resetColor}`;
+      counter++;
+      return replacement;
+    });
+    return styledBody;
+  }
+
+  return body.replace(/(^|\n)(\s*)\*/g, `$1$2${bulletColor}•${resetColor}`);
+}
+
 marked.setOptions({
-  renderer: new TerminalRenderer(),
+  renderer: new TerminalRenderer({
+    list: bulletListStyle,
+    tableOptions: {
+      style: {
+        head: ["magenta"],
+        border: ["white"],
+        compact: false,
+      },
+    },
+  }),
 });
 
 const rl = readline.createInterface({
