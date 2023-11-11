@@ -56,15 +56,27 @@ async function restart() {
 }
 
 async function executeChallenge(challenge: string, input?: string) {
-  const { default: challengeModule } = await import(
-    `../CHALLENGE_${challenge}/index.js`
-  );
-  const solution = challengeModule.default(input);
+  try {
+    const { default: challengeModule } = await import(
+      `../CHALLENGE_${challenge}/index.js`
+    );
+    const solution = challengeModule.default(input);
 
-  console.log("\x1b[34m%s\x1b[0m", "\nSolution: \n");
-  console.log("\x1b[32m%s\x1b[0m", solution);
-
-  await restart();
+    console.log("\x1b[34m%s\x1b[0m", "\nSolution: \n");
+    console.log("\x1b[32m%s\x1b[0m", solution);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("\x1b[31m%s\x1b[0m", `Execution error: ${error.message}`);
+    } else {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        "Something went wrong while executing the challenge",
+        error,
+      );
+    }
+  } finally {
+    await restart();
+  }
 }
 
 function renderLogo() {
@@ -76,7 +88,7 @@ function renderLogo() {
                  /\\ \\                       /\\ \\
   ___     ___    \\_\\ \\      __     ___ ___  \\ \\ \\____     __    _  __
  /'___\\  / __\`\\  /'_\` \\   /'__\`\\ /' __\` __\`\\ \\ \\ '__\`\\  /'__\`\\ /\\\`'__\\
-/\\ \\__/ /\\ \\L\\ \\/\\ \\L\\ \\ /\\  __/ /\\ \\ \\/\\ \\/\\ \\ \\ \\L\\ \\/\\  __/ \\ \\ \\/
+/\\ \\__/ /\\ \\L\\ \\/\\ \\L\\ \\ /\\  __/ /\\ \\/\\ \\/\\ \\ \\ \\ \\L\\ \\/\\  __/ \\ \\ \\/
 \\ \\____\\\\ \\____/\\ \\___,_\\\\ \\____\\\\ \\_\\ \\_\\ \\_\\ \\ \\_,__/\\ \\____\\ \\ \\_\\
  \\/____/ \\/___/  \\/__,_ / \\/____/ \\/_/\\/_/\\/_/  \\/___/  \\/____/  \\/_/
  
@@ -96,7 +108,7 @@ function renderChallengeNumber(challenge) {
   console.log("\x1b[35m\nChallenge: \x1b[0m\x1b[33m#%s", challenge);
 }
 
-async function start(challenge?:string) {
+async function start(challenge?: string) {
   renderLogo();
 
   if (!challenge || !isValidChallenge(challenge)) {
