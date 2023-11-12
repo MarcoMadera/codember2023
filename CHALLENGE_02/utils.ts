@@ -12,8 +12,8 @@ export const square: OperationHandler = (value) => {
   return value * value;
 };
 
-export const concatenate: OperationHandler = (value, solution: string) => {
-  return solution + value;
+export const concatenate: OperationHandler = (value, currentString) => {
+  return currentString + value;
 };
 
 export const operations: Record<OperationSymbol, OperationHandler> = {
