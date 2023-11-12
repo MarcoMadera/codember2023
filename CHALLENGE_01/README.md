@@ -24,7 +24,7 @@ The words are sorted by their first appearance in the message!
 
 ## **How to Solve It**
 
-1. Solve the message you will find in this file: [message_01.txt](./message_01.txt)
+1. Solve the message you will find in this file: [message.txt](./message.txt)
 
 2. Submit your solution with the "submit" command in the terminal, for example like this:
    `submit dog3cat3car1sun1`

@@ -1,14 +1,9 @@
-import { join } from "path";
-import { readFileSync } from "fs";
 import type { OperationSymbol } from "./types";
 import { operations } from "./utils";
 import { INITIAL_SOLUTION, INITIAL_VALUE } from "./constants";
 
-export default function (input?: string): string {
-  const filePath = join(__dirname, "message_02.txt");
-  const message = input ?? readFileSync(filePath, "utf-8");
-
-  const { solution } = message.split("").reduce(
+export default function (input: string): string {
+  const { solution } = input.split("").reduce(
     ({ value, solution }, operationSymbol: OperationSymbol) => {
       if (!operations[operationSymbol]) {
         throw new Error(`Invalid operation symbol ${operationSymbol}`);

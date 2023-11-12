@@ -41,7 +41,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-function isValidChallenge(challenge: string) {
+function isValidChallenge(challenge?: string) {
   const challengeDir = join(__dirname, `../CHALLENGE_${challenge}`);
   return existsSync(challengeDir);
 }
@@ -83,15 +83,26 @@ async function restart() {
   rl.close();
 }
 
-async function executeChallenge(challenge: string, input?: string) {
+function getDefaultInput(challenge: string) {
+  const challengeDir = join(__dirname, `../CHALLENGE_${challenge}`);
+  const defaultInputPath = `${challengeDir}/message.txt`;
+  return readFileSync(defaultInputPath, "utf-8");
+}
+
+async function executeChallenge(challenge: string, input: string) {
   try {
+    if (input === null || input === undefined) {
+      throw new Error("No input provided");
+    }
+
     const { default: challengeModule } = await import(
       `../CHALLENGE_${challenge}/index.js`
     );
+
     const solution = challengeModule.default(input);
 
     console.log("\x1b[34m%s\x1b[0m", "\nSolution: \n");
-    console.log("\x1b[32m%s\x1b[0m", solution);
+    console.log("\x1b[32m%s\x1b[0m", solution, "\n");
   } catch (error) {
     if (error instanceof Error) {
       console.error("\x1b[31m%s\x1b[0m", `Execution error: ${error.message}`);
@@ -133,40 +144,76 @@ function renderReadMeFile(challenge: string) {
 }
 
 function renderChallengeNumber(challenge) {
-  console.log("\x1b[35m\nChallenge: \x1b[0m\x1b[33m#%s", challenge);
+  console.log("\x1b[35m\nChallenge: \x1b[0m\x1b[33m#%s\x1b[0m", challenge);
+}
+
+function defaultInputExists(challenge: string) {
+  const challengeDir = join(__dirname, `../CHALLENGE_${challenge}`);
+  const defaultInputPath = `${challengeDir}/message.txt`;
+  return existsSync(defaultInputPath);
+}
+
+async function getChallengeInput(challenge: string) {
+  const hasDefaultInput = defaultInputExists(challenge);
+
+  if (hasDefaultInput) {
+    const useCustomInputAnswer = await rl.question(
+      "Do you want to use a custom input? y/n \n",
+    );
+    const useCustomInput = useCustomInputAnswer.toLowerCase();
+
+    if (useCustomInput === "yes" || useCustomInput === "y") {
+      return await rl.question("Please enter your input \n");
+    } else {
+      return getDefaultInput(challenge);
+    }
+  }
+
+  return await rl.question("Please enter your input \n");
+}
+
+async function handleSolutionOnlyExecution(challenge: string) {
+  const hasDefaultInput = defaultInputExists(challenge);
+
+  if (hasDefaultInput) {
+    await executeChallenge(challenge, getDefaultInput(challenge));
+    rl.close();
+    return;
+  }
+  if (!hasDefaultInput) {
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "No default input file found for this challenge.",
+    );
+    await handleChallengeExecution(challenge);
+  }
+}
+
+async function handleChallengeExecution(challenge) {
+  const challengeInput = await getChallengeInput(challenge);
+  await executeChallenge(challenge, challengeInput);
 }
 
 async function start(challenge?: string) {
   renderLogo();
 
-  if (!challenge || !isValidChallenge(challenge)) {
+  if (!isValidChallenge(challenge)) {
     challenge = await getValidChallenge(challenge);
   }
 
   renderChallengeNumber(challenge);
 
-  if (process.argv?.includes("solution-only")) {
-    await executeChallenge(challenge);
-    rl.close();
-    return;
+  const isSolutionOnly = process.argv?.includes("solution-only");
+
+  if (isSolutionOnly) {
+    return await handleSolutionOnlyExecution(challenge);
   }
 
   renderReadMeFile(challenge);
 
-  const useCustomInputAnswer = await rl.question(
-    "Do you want to use a custom input? y/n \n",
-  );
-  const useCustomInput = useCustomInputAnswer.toLowerCase();
-  if (useCustomInput === "yes" || useCustomInput === "y") {
-    const customInputAnswer = await rl.question(
-      "Please enter the custom input \n",
-    );
-    await executeChallenge(challenge, customInputAnswer.trim());
-  } else {
-    await executeChallenge(challenge);
-  }
+  await handleChallengeExecution(challenge);
 
   rl.close();
 }
 
-start(formatChallenge(process.argv[2]));
+start(formatChallenge(process.argv?.[2]));

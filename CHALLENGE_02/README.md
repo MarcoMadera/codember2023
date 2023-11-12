@@ -26,6 +26,6 @@ Develop a mini compiler that takes a text string and returns another text string
 
 ## **How to Solve It**
 
-1. Solve the message you will find in this file: [message_02.txt](./message_02.txt)
+1. Solve the message you will find in this file: [message.txt](./message.txt)
 2. Submit your solution with the "submit" command in the terminal, for example like this:
    `submit 024899488`

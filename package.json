@@ -6,9 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"**/*.ts\"",
-    "copy-files": "node copy-files.js",
     "start": "tsc && node ./dist/scripts/copy-files.js && node ./dist/scripts/start.js $npm_config_challenge",
-    "challenge": "tsc && node ./dist/scripts/copy-files.js && node ./dist/scripts/start.js $npm_config_challenge"
+    "challenge": "npm start"
   },
   "keywords": [],
   "author": "",
