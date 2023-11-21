@@ -99,10 +99,10 @@ async function executeChallenge(challenge: string, input: string) {
       `../CHALLENGE_${challenge}/index.js`
     );
 
-    const solution = challengeModule.default(input);
+    const solution = await challengeModule.default(input, rl);
 
-    console.log("\x1b[34m%s\x1b[0m", "\nSolution: \n");
-    console.log("\x1b[32m%s\x1b[0m", solution, "\n");
+    console.log("\x1b[34m%s\x1b[0m", "\nSolution:\n");
+    console.log("\x1b[32m%s\x1b[0m", `${solution}\n`);
   } catch (error) {
     if (error instanceof Error) {
       console.error("\x1b[31m%s\x1b[0m", `Execution error: ${error.message}`);
